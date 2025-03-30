@@ -1,0 +1,59 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import tkinter as tk
+from tkinter import filedialog
+
+def load_csv():
+    file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
+    if file_path:
+        df = pd.read_csv(file_path)
+        print("Data Loaded Successfully!")
+        print(df.head())
+        return df
+    return None
+
+def analyze_data(df):
+    print("Basic Statistics:")
+    print(df.describe())
+    column = input("Enter column name to calculate average: ")
+    if column in df.columns:
+        avg_value = df[column].mean()
+        print(f"Average of {column}: {avg_value}")
+    else:
+        print("Invalid column name!")
+
+def visualize_data(df):
+    print("1. Bar Chart\n2. Scatter Plot\n3. Heatmap")
+    choice = int(input("Select visualization type (1-3): "))
+    
+    if choice == 1:
+        column = input("Enter column name for Bar Chart: ")
+        if column in df.columns:
+            df[column].value_counts().plot(kind='bar')
+            plt.title(f"Bar Chart of {column}")
+            plt.show()
+    elif choice == 2:
+        x_col = input("Enter X-axis column: ")
+        y_col = input("Enter Y-axis column: ")
+        if x_col in df.columns and y_col in df.columns:
+            plt.scatter(df[x_col], df[y_col])
+            plt.xlabel(x_col)
+            plt.ylabel(y_col)
+            plt.title("Scatter Plot")
+            plt.show()
+    elif choice == 3:
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(df.corr(), annot=True, cmap='coolwarm')
+        plt.title("Heatmap of Correlations")
+        plt.show()
+    else:
+        print("Invalid choice!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.withdraw()
+    df = load_csv()
+    if df is not None:
+        analyze_data(df)
+        visualize_data(df)
